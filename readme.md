@@ -65,9 +65,3 @@ This plugin is open-source and welcomes contributions. Feel free to:
 ## License
 
 MIT License - feel free to modify and redistribute as you wish. See [LICENSE](LICENSE) for more details.
-```
-
-Would you like me to also create:
-1. A LICENSE file with the MIT license?
-2. A CONTRIBUTING.md with guidelines for contributions?
-3. Add more detailed configuration examples?

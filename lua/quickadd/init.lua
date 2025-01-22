@@ -24,13 +24,15 @@ function M.setup(opts)
         end
     })
 
-    -- Set up the F12 keybinding
-    vim.keymap.set('n', '<F12>', function()
+    vim.keymap.set('n', '<leader>;;', function()
         M.show_popup("memo")
     end, { desc = "Open Quick Memo" })
-    vim.keymap.set('n', '<F11>', function()
+    vim.keymap.set('n', "<leader>;'", function()
         M.show_popup("todo")
     end, { desc = "Open Quick Todo" })
+    vim.keymap.set('n', "<leader>''", function()
+        M.show_popup("qtodo")
+    end, { desc = "Open Quicker Todo" })
 end
 
 function M.show_popup(type)
@@ -40,7 +42,7 @@ function M.show_popup(type)
 
     local bufnr = vim.api.nvim_create_buf(false, true)
 
-    local title = type == "memo" and "Quick Memo" or "Quick Todo"
+    local title = type == "memo" and "Quick Memo" or "Quick Todo" or "Quicker Todo"
 
     -- Create the popup
     local win_id = popup.create(bufnr, {
@@ -67,8 +69,10 @@ function M.show_popup(type)
         local content = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)[1]
         if type == "memo" then
             M.save_memo(content)
-        else
+        elseif type == "todo" then
             M.save_todo(content)
+        else
+            M.quicker_todo()
         end
         vim.api.nvim_win_close(win_id, true)
     end, opts)
@@ -130,7 +134,6 @@ function M.save_memo(content)
     end
 end
 
--- Add new save_todo function
 function M.save_todo(content)
     if not content or content == '' then
         return
@@ -139,7 +142,7 @@ function M.save_todo(content)
     utils.ensure_dir_exists(vim.fn.fnamemodify(M.config.todo_path, ":h"))
 
     -- Format the todo entry
-    local todo_text = string.format("- [ ] [[%s]] : %s [Created:: %s)]\n",
+    local todo_text = string.format("- [ ] [[%s]] : %s [Created:: %s]\n",
         utils.get_date_link(),
         content,
         utils.get_timestamp()
@@ -153,6 +156,34 @@ function M.save_todo(content)
     else
         vim.notify("Failed to save todo", vim.log.levels.ERROR)
     end
+end
+
+function M.quicker_todo(content)
+    if not content or content == '' then
+        return
+    end
+
+    utils.ensure_dir_exists(vim.fn.fnamemodify(M.config.todo_path, ":h"))
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1]
+
+    -- Format the todo entry
+    local todo_text = string.format("- [ ] %s [Created:: %s]\n",
+        content,
+        utils.get_timestamp()
+    )
+
+    vim.api.nvim_buf_set_lines(
+        0,
+        row,
+        row,
+        false,
+        { todo_text }
+    )
+
+    vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
+
+    vim.notify("Todo saved", vim.log.levels.INFO)
 end
 
 return M
