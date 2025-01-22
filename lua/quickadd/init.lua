@@ -71,7 +71,7 @@ function M.show_popup(type)
             M.save_memo(content)
         elseif type == "todo" then
             M.save_todo(content)
-        else
+        elseif type == "qtodo" then
             M.quicker_todo()
         end
         vim.api.nvim_win_close(win_id, true)
