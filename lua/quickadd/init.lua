@@ -169,9 +169,10 @@ function M.quicker_todo(content)
     if not content or content == '' then
         return
     end
+    
+    content = content:gsub("[\n\r]", " ")
 
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    local row = cursor[1]
+    local row = vim.api.nvim_win_get_cursor(0)[1]
 
     -- Format the todo entry
     local todo_text = string.format("- [ ] %s [Created:: %s]\n",
@@ -179,8 +180,10 @@ function M.quicker_todo(content)
         utils.get_timestamp()
     )
 
-    vim.api.nvim_buf_set_lines(0, row, row, false, { todo_text })
-    vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
+    local lines = {todo_text}
+
+    vim.api.nvim_buf_set_lines(0, row-1,row-1, false, lines)
+    -- vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
 
     vim.notify("Todo saved", vim.log.levels.INFO)
 end
