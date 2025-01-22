@@ -42,7 +42,14 @@ function M.show_popup(type)
 
     local bufnr = vim.api.nvim_create_buf(false, true)
 
-    local title = type == "memo" and "Quick Memo" or "Quick Todo" or "Quicker Todo"
+    local title 
+    if type == "memo" then
+        title = "Quick Memo" 
+    elseif type == "todo" then
+        title = "Quick Todo"
+    else
+        title = "Quicker Todo"
+    end
 
     -- Create the popup
     local win_id = popup.create(bufnr, {
@@ -72,7 +79,7 @@ function M.show_popup(type)
         elseif type == "todo" then
             M.save_todo(content)
         elseif type == "qtodo" then
-            M.quicker_todo()
+            M.quicker_todo(content)
         end
         vim.api.nvim_win_close(win_id, true)
     end, opts)
@@ -163,7 +170,6 @@ function M.quicker_todo(content)
         return
     end
 
-    utils.ensure_dir_exists(vim.fn.fnamemodify(M.config.todo_path, ":h"))
     local cursor = vim.api.nvim_win_get_cursor(0)
     local row = cursor[1]
 
@@ -173,14 +179,7 @@ function M.quicker_todo(content)
         utils.get_timestamp()
     )
 
-    vim.api.nvim_buf_set_lines(
-        0,
-        row,
-        row,
-        false,
-        { todo_text }
-    )
-
+    vim.api.nvim_buf_set_lines(0, row, row, false, { todo_text })
     vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
 
     vim.notify("Todo saved", vim.log.levels.INFO)
