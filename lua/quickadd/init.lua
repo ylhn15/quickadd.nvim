@@ -24,10 +24,10 @@ function M.setup(opts)
 		end,
 	})
 
-	vim.keymap.set("n", "<leader>;;", function()
+	vim.keymap.set("n", "<leader>qn", function()
 		M.show_popup("memo")
 	end, { desc = "Open Quick Memo" })
-	vim.keymap.set("n", "<leader>;'", function()
+	vim.keymap.set("n", "<leader>qt", function()
 		M.show_popup("todo")
 	end, { desc = "Open Quick Todo" })
 end
