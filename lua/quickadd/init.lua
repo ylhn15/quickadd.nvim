@@ -144,8 +144,16 @@ function M.save_todo(content)
 	utils.ensure_dir_exists(vim.fn.fnamemodify(M.config.todo_path, ":h"))
 
 	-- Format the todo entry
-	local todo_text =
-		string.format("- [ ] [[%s]] : %s [Created:: %s]\n", utils.get_date_link(), content, utils.get_timestamp())
+	local current_file = utils.get_filename(M.last_buffer)
+	local todo_text = ""
+
+	if string.find(current_file, "[[") then
+		todo_text =
+			string.format("- [ ] [[%s]] : %s [Created:: %s]\n", utils.get_date_link(), content, utils.get_timestamp())
+	else
+		todo_text =
+			string.format("- [ ] [[%s]] : %s [Created:: %s]\n", utils.get_date_link(), content, utils.get_timestamp())
+	end
 
 	local file = io.open(M.config.todo_path, "a")
 	if file then
