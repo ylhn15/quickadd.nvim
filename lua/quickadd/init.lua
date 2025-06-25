@@ -126,7 +126,7 @@ function M.save_memo(content)
 		table.insert(file_content, memo_section_index + 1, memo_text)
 	else
 		-- If section doesn't exist, append at the end
-		table.insert(file_content, "### 메모")
+		table.insert(file_content, "# Quickadd")
 		table.insert(file_content, memo_text)
 	end
 
