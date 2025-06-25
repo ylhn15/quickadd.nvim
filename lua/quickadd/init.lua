@@ -104,10 +104,10 @@ function M.save_memo(content)
 	-- Read existing content
 	local file_content = utils.read_file(daily_note)
 
-	-- Find the "# quickadd" section
+	-- Find the "## quickadd" section
 	local memo_section_index = nil
 	for i, line in ipairs(file_content) do
-		if line == "# Quickadd" then
+		if line == "## Quickadd" then
 			memo_section_index = i
 			break
 		end
@@ -126,7 +126,7 @@ function M.save_memo(content)
 		table.insert(file_content, memo_section_index + 1, memo_text)
 	else
 		-- If section doesn't exist, append at the end
-		table.insert(file_content, "# Quickadd")
+		table.insert(file_content, "## Quickadd")
 		table.insert(file_content, memo_text)
 	end
 
