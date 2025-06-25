@@ -141,19 +141,45 @@ function M.save_todo(content)
 		return
 	end
 
-	utils.ensure_dir_exists(vim.fn.fnamemodify(M.config.todo_path, ":h"))
+	-- Get today's date
+	local date = os.date("%Y-%m-%d")
+	local daily_note = M.config.daily_note_path .. date .. ".md"
 
-	-- Format the todo entry
+	-- Ensure directory exists
+	utils.ensure_dir_exists(M.config.daily_note_path)
+
+	-- Read existing content
+	local file_content = utils.read_file(daily_note)
+
+	-- Find the "## quickadd" section
+	local memo_section_index = nil
+	for i, line in ipairs(file_content) do
+		if line == "## TODOs" then
+			memo_section_index = i
+			break
+		end
+	end
+
+	-- Format the context as wikilink
+	-- Extract filename without path and extension
 	local filename = utils.get_filename(M.last_buffer)
-	local todo_text = string.format("- [ ] [[%s]] : %s [Created:: %s]\n", filename, content, utils.get_timestamp())
 
-	local file = io.open(M.config.todo_path, "a")
-	if file then
-		file:write(todo_text)
-		file:close()
-		vim.notify("Todo saved to todolist.md", vim.log.levels.INFO)
+	-- Format the memo as bullet point with context and timestamp
+	local memo_text = string.format("%s", content)
+
+	-- Insert the memo after the section
+	if memo_section_index then
+		-- Insert after the section header, keeping existing content
+		table.insert(file_content, memo_section_index + 1, memo_text)
 	else
-		vim.notify("Failed to save todo", vim.log.levels.ERROR)
+		-- If section doesn't exist, append at the end
+		table.insert(file_content, "## TODOs")
+		table.insert(file_content, memo_text)
+	end
+
+	-- Write back to file
+	if utils.write_file(daily_note, file_content) then
+		vim.notify("TODO saved to " .. date .. ".md", vim.log.levels.INFO)
 	end
 end
 
