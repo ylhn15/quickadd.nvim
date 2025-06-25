@@ -30,9 +30,6 @@ function M.setup(opts)
 	vim.keymap.set("n", "<leader>;'", function()
 		M.show_popup("todo")
 	end, { desc = "Open Quick Todo" })
-	vim.keymap.set("n", "<leader>''", function()
-		M.show_popup("qtodo")
-	end, { desc = "Open Quicker Todo" })
 end
 
 function M.show_popup(type)
@@ -47,8 +44,6 @@ function M.show_popup(type)
 		title = "Quick Memo"
 	elseif type == "todo" then
 		title = "Quick Todo"
-	else
-		title = "Quicker Todo"
 	end
 
 	-- Create the popup
@@ -78,8 +73,6 @@ function M.show_popup(type)
 			M.save_memo(content)
 		elseif type == "todo" then
 			M.save_todo(content)
-		elseif type == "qtodo" then
-			M.quicker_todo(content)
 		end
 		vim.api.nvim_win_close(win_id, true)
 	end, opts)
@@ -182,25 +175,3 @@ function M.save_todo(content)
 		vim.notify("TODO saved to " .. date .. ".md", vim.log.levels.INFO)
 	end
 end
-
-function M.quicker_todo(content)
-	if not content or content == "" then
-		return
-	end
-
-	content = content:gsub("[\n\r]", " ")
-
-	local row = vim.api.nvim_win_get_cursor(0)[1]
-
-	-- Format the todo entry
-	local todo_text = string.format("- [ ] %s [Created:: %s]\n", content, utils.get_timestamp())
-
-	local lines = { todo_text }
-
-	vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, lines)
-	-- vim.api.nvim_win_set_cursor(0, { row + 1, 0 })
-
-	vim.notify("Todo saved", vim.log.levels.INFO)
-end
-
-return M
